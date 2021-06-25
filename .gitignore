@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
+.idea/saveactions_settings.xml
