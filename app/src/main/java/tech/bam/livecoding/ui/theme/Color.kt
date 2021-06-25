@@ -2,7 +2,6 @@ package tech.bam.livecoding.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+val GreenLemon = Color(0xFFA9F24D)
+val GreenLeaves = Color(0xFF00C88C)
+val BlueSea = Color(0xFF4895AD)
