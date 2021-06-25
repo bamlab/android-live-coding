@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="status_bar_scrim">@color/system_ui_scrim_dark</color>
+</resources>
