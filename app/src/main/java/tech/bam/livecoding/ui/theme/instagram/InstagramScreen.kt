@@ -1,6 +1,5 @@
 package tech.bam.livecoding.ui.theme.instagram
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -19,37 +18,76 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import tech.bam.livecoding.ui.theme.BlueSea
 import tech.bam.livecoding.ui.theme.GreenLeaves
 import tech.bam.livecoding.ui.theme.GreenLemon
+import tech.bam.livecoding.ui.theme.Purple
+import tech.bam.livecoding.ui.theme.RedRaspberry
 import tech.bam.livecoding.ui.theme.Typography
 
 @Composable
-fun InstagramScreen() {
+fun InstagramScreen(navController: NavController, steps: Int, currentStep: Int) {
     val isPressed = remember { mutableStateOf(false) }
+
+    val goToNextScreen = {
+        if (currentStep + 1 <= steps) navController.navigate("instagram/$steps/${currentStep + 1}")
+    }
+    val goToPreviousScreen = {
+        if (currentStep - 1 > 0) navController.navigate("instagram/$steps/${currentStep - 1}")
+    }
+
+    val backgroundColors = when (currentStep % 3) {
+        0 -> listOf(GreenLemon, GreenLeaves, BlueSea)
+        1 -> listOf(GreenLeaves, BlueSea, Purple)
+        else -> listOf(BlueSea, Purple, RedRaspberry)
+    }
+
+    val textTypo = when (currentStep % 2) {
+        0 -> Typography.h1
+        else -> Typography.h2
+    }
+
+    val textContent = when (currentStep % 3) {
+        0 -> "Wow incredible !"
+        1 -> "Excellent !"
+        else -> "How you doin' ?"
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier =
         Modifier
             .background(
                 Brush.linearGradient(
-                    colors = listOf(GreenLemon, GreenLeaves, BlueSea),
+                    colors = backgroundColors,
                     start = Offset.Zero, end = Offset.Infinite
                 )
             )
             .pointerInput(Unit) {
+                val maxWidth = this.size.width
                 detectTapGestures(
                     onPress = {
+                        val pressStartTime = System.currentTimeMillis()
                         isPressed.value = true
                         this.tryAwaitRelease()
+                        val pressEndTime = System.currentTimeMillis()
+                        val totalPressTime = pressEndTime - pressStartTime
+                        if (totalPressTime < 200) {
+                            val isTapOnRightTwoTiers = (it.x > (maxWidth / 4))
+                            if (isTapOnRightTwoTiers) {
+                                goToNextScreen()
+                            } else {
+                                goToPreviousScreen()
+                            }
+                        }
                         isPressed.value = false
                     },
-                    onLongPress = { /* This is empty so onTap is not fired on long press */ },
-                    onTap = { Log.d("InstagramScreen", "onTap") }
                 )
             }
     ) {
-        InstagramSlicedProgressBar(2, 0, isPressed.value)
+        InstagramSlicedProgressBar(steps, currentStep, isPressed.value, goToNextScreen)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -58,8 +96,8 @@ fun InstagramScreen() {
                 .weight(1f)
         ) {
             Text(
-                text = "How you doin' ?",
-                style = Typography.h1,
+                text = textContent,
+                style = textTypo,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -81,5 +119,6 @@ fun InstagramScreen() {
 @Preview
 @Composable
 fun InstagramScreenPreview() {
-    InstagramScreen()
+    val navController = rememberNavController()
+    InstagramScreen(navController, 3, 1)
 }

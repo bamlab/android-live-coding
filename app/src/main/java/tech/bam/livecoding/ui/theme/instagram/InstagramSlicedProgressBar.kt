@@ -1,6 +1,5 @@
 package tech.bam.livecoding.ui.theme.instagram
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -25,17 +24,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun InstagramSlicedProgressBar(steps: Int, currentStep: Int, paused: Boolean) {
-    val percent = remember { Animatable(0f).also { it.updateBounds(0f, 1f) } }
+fun InstagramSlicedProgressBar(
+    steps: Int,
+    currentStep: Int,
+    paused: Boolean,
+    onFinished: () -> Unit
+) {
+    val percent = remember { Animatable(0f) }
     LaunchedEffect(paused) {
-        val endReason = percent.animateTo(
-            targetValue = if (paused) percent.value else 1f,
-            animationSpec = tween(
-                durationMillis = (5000 * (1f - percent.value)).toInt(),
-                easing = LinearEasing
+        if (paused) percent.stop()
+        else {
+            percent.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(
+                    durationMillis = (5000 * (1f - percent.value)).toInt(),
+                    easing = LinearEasing
+                )
             )
-        ).endReason
-        Log.d("InstagramSlicedProgressBar", endReason.toString())
+            onFinished()
+        }
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -44,7 +51,7 @@ fun InstagramSlicedProgressBar(steps: Int, currentStep: Int, paused: Boolean) {
             .padding(24.dp, 0.dp),
 
         ) {
-        for (index in 0..steps) {
+        for (index in 1..steps) {
             Row(
                 modifier = Modifier
                     .height(4.dp)
@@ -74,5 +81,5 @@ fun InstagramSlicedProgressBar(steps: Int, currentStep: Int, paused: Boolean) {
 @Preview
 @Composable
 fun InstagramSlicedProgressBarPreview() {
-    InstagramSlicedProgressBar(steps = 3, currentStep = 2, paused = false)
+    InstagramSlicedProgressBar(steps = 3, currentStep = 2, paused = false) { }
 }
