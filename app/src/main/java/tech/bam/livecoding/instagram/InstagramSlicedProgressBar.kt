@@ -1,4 +1,4 @@
-package tech.bam.livecoding.ui.theme.instagram
+package tech.bam.livecoding.instagram
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing

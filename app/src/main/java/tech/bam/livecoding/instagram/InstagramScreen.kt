@@ -1,4 +1,4 @@
-package tech.bam.livecoding.ui.theme.instagram
+package tech.bam.livecoding.instagram
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
