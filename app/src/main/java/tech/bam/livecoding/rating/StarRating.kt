@@ -50,6 +50,12 @@ fun StarRating(modifier: Modifier = Modifier, max: Int = 5) {
                         offset.value = downOffset
                     }, onDrag = { _, dragAmount ->
                         offset.value += dragAmount
+                    }, onDragEnd = {
+                        offset.value = Offset(
+                            (offset.value.x * 2)
+                                .roundToInt()
+                                .toFloat() / 2, 0f
+                        )
                     })
                 }
                 .pointerInput(Unit) {
@@ -61,12 +67,13 @@ fun StarRating(modifier: Modifier = Modifier, max: Int = 5) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             (0 until max).forEach { i ->
-                val sizePercent = ((animatedOffset.value - i) * widthPx / max).coerceIn(0f, 1f)
+                val sizePercent = (offset.value.x / widthPx * max - i).coerceIn(0f, 1f)
                 val isActive = animatedOffset.value > i
                 Star(
                     size = width / max,
                     sizePercent = sizePercent,
                     isActive = isActive,
+                    delayMillis = 100 * i
                 )
             }
         }

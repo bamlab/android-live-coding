@@ -2,13 +2,17 @@ package tech.bam.livecoding.rating
 
 import android.util.Log
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.lerp
@@ -20,10 +24,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import tech.bam.livecoding.R
 
 @Composable
-fun Star(size: Dp, modifier: Modifier = Modifier, isActive: Boolean = false, sizePercent: Float) {
+fun Star(
+    size: Dp,
+    modifier: Modifier = Modifier,
+    isActive: Boolean = false,
+    sizePercent: Float,
+    delayMillis: Int = 0
+) {
     val colorPercent = remember { Animatable(if (isActive) 1f else 0f) }
 
     LaunchedEffect(isActive) {
@@ -39,10 +50,31 @@ fun Star(size: Dp, modifier: Modifier = Modifier, isActive: Boolean = false, siz
         )
     }
 
-    val starPathNodes = addPathNodes(stringResource(id = R.string.active_star))
-    val dotPathNodes = addPathNodes(stringResource(id = R.string.inactive_star))
-    val pathNodes = lerp(dotPathNodes, starPathNodes, sizePercent)
+    val activeStarPathNodes = addPathNodes(stringResource(id = R.string.active_star))
+    val inactiveStarPathNodes = addPathNodes(stringResource(id = R.string.inactive_star))
+    val starPathNodes = lerp(inactiveStarPathNodes, activeStarPathNodes, sizePercent)
+
+    val activeStarFacePathNodes = addPathNodes(stringResource(id = R.string.active_star_face))
+    val inactiveStarFacePathNodes = addPathNodes(stringResource(id = R.string.inactive_star_face))
+    val starFacePathNodes = lerp(inactiveStarFacePathNodes, activeStarFacePathNodes, sizePercent)
+
     val color = lerp(Color.Gray, Color.Yellow, colorPercent.value)
+
+    val animatedRotation = remember { Animatable(-15f) }
+
+    LaunchedEffect(Unit) {
+        delay(delayMillis.toLong())
+        animatedRotation.animateTo(
+            targetValue = 15f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 1000,
+                    easing = CubicBezierEasing(.42f, 0f, .58f, 1f),
+                ),
+                repeatMode = RepeatMode.Reverse,
+            ),
+        )
+    }
 
     Image(
         painter = rememberVectorPainter(
@@ -52,12 +84,17 @@ fun Star(size: Dp, modifier: Modifier = Modifier, isActive: Boolean = false, siz
             viewportHeight = 48f,
         ) { _, _ ->
             Path(
-                pathData = pathNodes,
+                pathData = starPathNodes,
                 fill = SolidColor(color),
+            )
+            Path(
+                pathData = starFacePathNodes,
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1f
             )
         },
         contentDescription = "Star",
-        modifier = modifier
+        modifier = modifier.rotate(animatedRotation.value)
     )
 }
 
