@@ -1,4 +1,4 @@
-package tech.bam.livecoding.instagram
+package tech.bam.livecoding
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
@@ -6,11 +6,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import tech.bam.livecoding.instagram.InstagramScreen
+import tech.bam.livecoding.rating.RatingScreen
 
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "instagram/{steps}/{currentStep}") {
+    NavHost(navController = navController, startDestination = "rating") {
+        composable("rating") { RatingScreen() }
         composable(
             "instagram/{steps}/{currentStep}",
             arguments = listOf(
