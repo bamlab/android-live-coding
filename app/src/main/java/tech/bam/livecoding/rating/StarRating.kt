@@ -1,26 +1,26 @@
 package tech.bam.livecoding.rating
 
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -31,50 +31,49 @@ fun StarRating(modifier: Modifier = Modifier, max: Int = 5) {
         val width = maxWidth
         val widthPx = with(LocalDensity.current) { width.toPx() }
 
-        val swipeableState = rememberSwipeableState(0)
-        val coroutineScope = rememberCoroutineScope()
+        val offset = remember { mutableStateOf(Offset.Zero) }
 
-        val anchors: Map<Float, Int> = (0..max).fold(mutableMapOf()) { acc, i ->
-            acc[widthPx / max * i] = i
-            acc
+        val value = (offset.value.x * 2 * max / widthPx).roundToInt().toFloat() / 2
+
+        val animatedOffset = remember { Animatable(0f) }
+
+        LaunchedEffect(value) {
+            animatedOffset.animateTo(value)
         }
 
         Row(
             modifier = Modifier
                 .width(width)
                 .fillMaxHeight()
-                .swipeable(
-                    state = swipeableState,
-                    anchors = anchors,
-                    thresholds = { _, _ -> FractionalThreshold(0.3f) },
-                    orientation = Orientation.Horizontal
-                ),
+                .pointerInput(Unit) {
+                    detectDragGestures(onDragStart = { downOffset ->
+                        offset.value = downOffset
+                    }, onDrag = { _, dragAmount ->
+                        offset.value += dragAmount
+                    })
+                }
+                .pointerInput(Unit) {
+                    detectTapGestures { downOffset ->
+                        offset.value = downOffset
+                    }
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             (0 until max).forEach { i ->
-                val sizePercent = (swipeableState.offset.value / widthPx * max - i).coerceIn(0f, 1f)
-                val isActive = swipeableState.targetValue > i
+                val sizePercent = ((animatedOffset.value - i) * widthPx / max).coerceIn(0f, 1f)
+                val isActive = animatedOffset.value > i
                 Star(
                     size = width / max,
                     sizePercent = sizePercent,
                     isActive = isActive,
-                    modifier = Modifier.clickable {
-                        coroutineScope.launch {
-                            swipeableState.animateTo(
-                                targetValue = i + 1, anim = tween(
-                                    durationMillis = 300,
-                                    easing = FastOutLinearInEasing
-                                )
-                            )
-                        }
-                    })
+                )
             }
         }
     }
 }
 
-@Preview
+@Preview(heightDp = 100)
 @Composable
 fun StarRatingPreview() {
     StarRating(modifier = Modifier.width(240.dp))
