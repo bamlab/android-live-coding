@@ -4,10 +4,13 @@ import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -38,6 +41,7 @@ fun Star(
     delayMillis: Int = 0
 ) {
     val colorPercent = remember { Animatable(if (isActive) 1f else 0f) }
+    val animatedBounce = remember { Animatable(0f) }
 
     LaunchedEffect(isActive) {
         val targetValue = if (isActive) 1f else 0f
@@ -50,6 +54,24 @@ fun Star(
                 easing = FastOutLinearInEasing
             )
         )
+
+        if (isActive) {
+            animatedBounce.animateTo(
+                targetValue = 0f,
+                animationSpec = infiniteRepeatable(
+                    animation = keyframes {
+                        this.durationMillis = 5000
+                        10f at 1000 with FastOutSlowInEasing
+                        0f at 2000 with FastOutLinearInEasing
+                        20f at 3000 with FastOutSlowInEasing
+                        5f at 4000 with FastOutSlowInEasing
+                    },
+                    repeatMode = RepeatMode.Reverse,
+                )
+            )
+        } else {
+            animatedBounce.animateTo(0f)
+        }
     }
 
     val activeStarPathNodes = addPathNodes(stringResource(id = R.string.active_star))
@@ -103,7 +125,9 @@ fun Star(
             )
         },
         contentDescription = "Star",
-        modifier = modifier.rotate(animatedRotation.value)
+        modifier = modifier
+            .rotate(animatedRotation.value)
+            .offset(y = -animatedBounce.value.dp)
     )
 }
 
