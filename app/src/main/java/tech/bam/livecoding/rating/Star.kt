@@ -13,6 +13,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.lerp
@@ -58,7 +60,7 @@ fun Star(
     val inactiveStarFacePathNodes = addPathNodes(stringResource(id = R.string.inactive_star_face))
     val starFacePathNodes = lerp(inactiveStarFacePathNodes, activeStarFacePathNodes, sizePercent)
 
-    val color = lerp(Color.Gray, Color.Yellow, colorPercent.value)
+    val color = lerp(Color.Gray, Color(248, 212, 25), colorPercent.value)
 
     val animatedRotation = remember { Animatable(-15f) }
 
@@ -86,11 +88,18 @@ fun Star(
             Path(
                 pathData = starPathNodes,
                 fill = SolidColor(color),
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 1f,
             )
             Path(
                 pathData = starFacePathNodes,
                 stroke = SolidColor(Color.Black),
-                strokeLineWidth = 1f
+                strokeLineWidth = 1f,
+                fill = Brush.linearGradient(
+                    colors = listOf(Color.White.copy(alpha = 0f), Color.White),
+                    start = Offset(0f, 23f),
+                    end = Offset(0f, 24f)
+                ),
             )
         },
         contentDescription = "Star",
@@ -101,7 +110,7 @@ fun Star(
 @Preview
 @Composable
 fun StarPreview() {
-    Star(sizePercent = 1f, size = 48.dp)
+    Star(sizePercent = 1f, size = 48.dp, isActive = true)
 }
 
 fun lerp(a: Float, b: Float, t: Float): Float {
