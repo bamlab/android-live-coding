@@ -75,8 +75,8 @@ fun InstagramScreen(navController: NavController, steps: Int, currentStep: Int) 
                         val pressEndTime = System.currentTimeMillis()
                         val totalPressTime = pressEndTime - pressStartTime
                         if (totalPressTime < 200) {
-                            val isTapOnRightTwoTiers = (it.x > (maxWidth / 4))
-                            if (isTapOnRightTwoTiers) {
+                            val isTapOnRightThreeQuarters = (it.x > (maxWidth / 4))
+                            if (isTapOnRightThreeQuarters) {
                                 goToNextScreen()
                             } else {
                                 goToPreviousScreen()
