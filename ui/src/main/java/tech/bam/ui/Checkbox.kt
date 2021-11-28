@@ -35,8 +35,8 @@ import kotlinx.coroutines.flow.scan
 
 @ExperimentalCoroutinesApi
 @Composable
-fun Checkbox(content: @Composable () -> Unit) {
-    ClickHandler { clicks ->
+fun Checkbox(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    ClickHandler(modifier) { clicks ->
         val isChecked =
             remember {
                 clicks.scan(initial = false) { isChecked, _ -> !isChecked }
@@ -66,11 +66,11 @@ fun PreviewCheckbox() {
 }
 
 @Composable
-fun ClickHandler(content: @Composable (clicks: Flow<Unit>) -> Unit) {
+fun ClickHandler(modifier: Modifier = Modifier, content: @Composable (clicks: Flow<Unit>) -> Unit) {
     val clicks = remember { MutableSharedFlow<Unit>() }
     val isPressed = remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier
+    Box(modifier = modifier
         .pointerInput(null) {
             detectTapGestures(
                 onPress = {
@@ -115,7 +115,9 @@ fun CheckboxFeedback(isChecked: State<Boolean>) {
 }
 
 @Composable
-fun Stars(enabled: State<Boolean>, content: @Composable () -> Unit) {
+fun Stars(
+    enabled: State<Boolean>, content: @Composable () -> Unit
+) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.stars))
     val lottieAnimatable = rememberLottieAnimatable()
 

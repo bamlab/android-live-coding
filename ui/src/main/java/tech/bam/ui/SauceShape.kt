@@ -17,10 +17,10 @@ class SauceShape(private val delta: Float) : Shape {
     companion object {
         private fun drawWholePath(size: Size, delta: Float) = Path().apply {
             reset()
-            lineTo(size.width - delta, 0f)
+            lineTo(size.width - delta - 20f, 0f)
             cubicTo(
                 size.width * 3 / 4 + delta,
-                size.height * 3 / 4 + delta,
+                size.height * 3 / 4 - delta,
                 size.width / 4 - delta,
                 size.height / 4 - delta,
                 0f,
@@ -32,10 +32,10 @@ class SauceShape(private val delta: Float) : Shape {
 
         fun drawBorderPath(size: Size, delta: Float) = Path().apply {
             reset()
-            moveTo(size.width - delta, 0f)
+            moveTo(size.width - delta - 20f, 0f)
             cubicTo(
                 size.width * 3 / 4 + delta,
-                size.height * 3 / 4 + delta,
+                size.height * 3 / 4 - delta,
                 size.width / 4 - delta,
                 size.height / 4 - delta,
                 0f,

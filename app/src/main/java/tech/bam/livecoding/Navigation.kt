@@ -6,14 +6,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tech.bam.livecoding.instagram.InstagramScreen
 import tech.bam.livecoding.rating.RatingScreen
+import tech.bam.ui.RoyalCheeseScreen
 
+@ExperimentalCoroutinesApi
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "rating") {
+    NavHost(navController = navController, startDestination = "lunch") {
         composable("rating") { RatingScreen() }
+        composable("lunch") { RoyalCheeseScreen() }
         composable(
             "instagram/{steps}/{currentStep}",
             arguments = listOf(

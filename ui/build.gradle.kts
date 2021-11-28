@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.application")
+    id("com.android.library")
     id("kotlin-android")
 }
 
@@ -9,8 +9,6 @@ android {
     defaultConfig {
         minSdk = 26
         targetSdk = 30
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
