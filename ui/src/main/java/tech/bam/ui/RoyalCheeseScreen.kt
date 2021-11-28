@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,9 +22,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun RoyalCheeseScreen() {
     MaterialTheme(typography = typography) {
-        Box(modifier = Modifier
-            .background(Color.White)
-            .fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxSize()
+        ) {
+            Sauce(
+                modifier = Modifier.align(Alignment.TopStart),
+                color = Color(
+                    249, 83, 79
+                )
+            )
+
             Column(
                 modifier = Modifier.align(Alignment.Center),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -41,6 +51,14 @@ fun RoyalCheeseScreen() {
                     )
                 }
             }
+
+
+            Sauce(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .rotate(180f),
+                color = Color(253, 187, 37)
+            )
         }
     }
 }
